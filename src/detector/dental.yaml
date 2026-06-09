@@ -1,11 +1,25 @@
 # OralGuard — YOLO Dataset Configuration
 # Dataset: DENTEX Challenge 2023 (MICCAI)
-# Task: Instance Segmentation of dental pathologies on panoramic X-rays
+# Task: Detection + classification of dental pathologies on panoramic X-rays
+#
+# IMPORTANT: Run src/detector/convert_dentex.py ONCE before training to
+# convert COCO JSON annotations to YOLO .txt format and organise images.
+#
+# Actual extracted DENTEX structure:
+#   training_data/training_data/quadrant-enumeration-disease/
+#     xrays/                          ← 705 training panoramic images
+#     train_quadrant_enumeration_disease.json  ← COCO annotations
+#   validation_data/validation_data/quadrant_enumeration_disease/
+#     xrays/                          ← 50 validation images (no public labels)
+#
+# After running convert_dentex.py the structure becomes:
+#   images/train/  images/val/  images/test/
+#   labels/train/  labels/val/  labels/test/
 
-# Root path (relative to where YOLO is invoked, or set absolute path)
+# Root path
 path: ../../../data/dentex
 
-# Relative paths to splits (under 'path')
+# Relative paths to splits (populated by convert_dentex.py)
 train: images/train
 val:   images/val
 test:  images/test
@@ -20,18 +34,12 @@ names:
   2: periapical_lesion
   3: impacted_tooth
 
-# Dataset description
-description: >
-  DENTEX Challenge 2023 — Dental Enumeration and Diagnosis on Panoramic X-Rays.
-  Annotated with bounding boxes and instance segmentation masks.
-  Sourced from MICCAI 2023. Labels converted to YOLO format.
+# Dataset statistics (after conversion)
+#   Train : 705 panoramic OPG images
+#   Val   : ~25 images (half of validation_data)
+#   Test  : ~25 images (other half of validation_data)
 
-# Expected folder structure under data/dentex/:
-#   images/
-#     train/   *.png / *.jpg
-#     val/     *.png / *.jpg
-#     test/    *.png / *.jpg
-#   labels/
-#     train/   *.txt  (YOLO format: class cx cy w h [segmentation polygon])
-#     val/     *.txt
-#     test/    *.txt
+# Citation:
+#   Hamamci et al. (2023). DENTEX: An Abnormal Tooth Detection with
+#   Dental Enumeration and Diagnosis Benchmark. MICCAI 2023.
+#   https://arxiv.org/abs/2305.11106
