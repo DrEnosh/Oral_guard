@@ -229,6 +229,8 @@ async def predict(file: UploadFile = File(...)):
         source=rgb_img,
         imgsz=1024,
         conf=CONF_THRESHOLD,
+        iou=0.45,
+        agnostic_nms=True,
         device=0 if DEVICE == "cuda" else "cpu",
         verbose=False,
     )
@@ -315,6 +317,20 @@ async def predict(file: UploadFile = File(...)):
             uncertain=uncertain,
             gradcam_path=gradcam_path,
         ))
+
+    # Deduplicate findings by tooth_id, keeping the one with higher confidence
+    deduped = {}
+    for f in findings:
+        fdi = f.tooth_id
+        if fdi not in deduped:
+            deduped[fdi] = f
+        else:
+            # Keep the prediction with higher max confidence score
+            f_max = max(f.confidence.values())
+            existing_max = max(deduped[fdi].confidence.values())
+            if f_max > existing_max:
+                deduped[fdi] = f
+    findings = list(deduped.values())
 
     # Sort by FDI number
     findings.sort(key=lambda x: x.tooth_id)
