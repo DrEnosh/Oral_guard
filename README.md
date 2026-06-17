@@ -234,6 +234,16 @@ for tooth in result["findings"]:
 
 Model training and validation are completed. Below are the final evaluation metrics on the test splits.
 
+### Training Curves
+
+The charts below are generated automatically from the MLflow run `resnet50-bce-20260614-124113` (29 epochs, BCEWithLogitsLoss + pos_weight, layer4 fine-tune).
+
+![Training & Validation Loss over 29 epochs](assets/loss_curve.png)
+
+![Validation F1 (Macro) over 29 epochs](assets/f1_curve.png)
+
+> Best val loss **0.6546** reached at epoch **14**. Best val F1 **0.5831** reached at epoch **20**. LR was halved at epoch 20 (ReduceLROnPlateau) which stabilised the F1 plateau and triggered early stopping after epoch 29.
+
 ### Overall Model Performance
 
 | Metric | Detector (YOLOv8m) | Classifier (ResNet50) |
