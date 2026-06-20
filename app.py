@@ -77,11 +77,11 @@ def load_models():
     with st.spinner("Loading OralGuard models from HuggingFace Hub..."):
         yolo_path = hf_hub_download(
             repo_id="Enosh729/oralguard",
-            filename="oralguard_det_finetuned.pt"
+            filename="oralguard_det_v2.pt"
         )
         clf_path = hf_hub_download(
             repo_id="Enosh729/oralguard",
-            filename="classifier_finetuned.pt"
+            filename="classifier_v2.pt"
         )
 
     yolo = YOLO(yolo_path)

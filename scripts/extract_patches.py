@@ -7,7 +7,7 @@ from ultralytics import YOLO
 import numpy as np
 
 def main():
-    model = YOLO(r"C:\Users\enosh\oralguard\src\detector\weights\oralguard_finetuned\weights\best.pt")
+    model = YOLO(r"C:\Users\enosh\oralguard\src\detector\weights\oralguard_finetuned_v2\weights\best.pt")
 
     output_patch_dir = r"C:\Users\enosh\oralguard\data\patches_v2\images"
     os.makedirs(output_patch_dir, exist_ok=True)
