@@ -20,47 +20,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ── Password gate ─────────────────────────────────────────────
-def check_password():
-    def password_entered():
-        expected_pass = "oralguard2024"
-        try:
-            if "APP_PASSWORD" in st.secrets:
-                expected_pass = st.secrets["APP_PASSWORD"]
-        except Exception:
-            pass
+# ── Password gate (Disabled) ──────────────────────────────────
+# App opens directly without password prompt
 
-        if hmac.compare_digest(
-            st.session_state["password"],
-            expected_pass
-        ):
-            st.session_state["password_correct"] = True
-        else:
-            st.session_state["password_correct"] = False
-
-    if st.session_state.get("password_correct", False):
-        return True
-
-    st.markdown("## 🦷 OralGuard — Dental Pathology Detection")
-    st.markdown("*Research demonstration tool. Not for clinical use.*")
-    st.text_input(
-        "Enter access password",
-        type="password",
-        on_change=password_entered,
-        key="password"
-    )
-    if "password_correct" in st.session_state:
-        st.error("Incorrect password. Contact Dr. Enosh A. Paulson for access.")
-    st.markdown("---")
-    st.caption(
-        "⚠️ Do not upload X-rays containing patient-identifying information. "
-        "All uploads are processed in memory and immediately discarded. "
-        "For research and educational use only."
-    )
-    return False
-
-if not check_password():
-    st.stop()
 
 # ── Rate limiting ─────────────────────────────────────────────
 if "request_count" not in st.session_state:
