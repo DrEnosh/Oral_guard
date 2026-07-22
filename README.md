@@ -17,9 +17,12 @@
 
 ---
 
-## 🌐 Live Web Application (Git Link)
-Access the interactive web dashboard hosted via GitHub Pages:  
-👉 **[https://drenosh.github.io/Oral_guard/](https://drenosh.github.io/Oral_guard/)**
+## 🚀 Live Hugging Face Space
+Access the live AI Streamlit deployment hosted on Hugging Face Spaces (with full PyTorch GPU/CPU inference):  
+👉 **[https://huggingface.co/spaces/Enosh729/oralguard-demo](https://huggingface.co/spaces/Enosh729/oralguard-demo)**
+
+Direct Web Application Link:  
+👉 **[https://enosh729-oralguard-demo.hf.space](https://enosh729-oralguard-demo.hf.space)**
 
 ---
 
