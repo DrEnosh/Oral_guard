@@ -23,9 +23,16 @@ st.set_page_config(
 # ── Password gate ─────────────────────────────────────────────
 def check_password():
     def password_entered():
+        expected_pass = "oralguard2024"
+        try:
+            if "APP_PASSWORD" in st.secrets:
+                expected_pass = st.secrets["APP_PASSWORD"]
+        except Exception:
+            pass
+
         if hmac.compare_digest(
             st.session_state["password"],
-            st.secrets["APP_PASSWORD"]
+            expected_pass
         ):
             st.session_state["password_correct"] = True
         else:
