@@ -3,7 +3,9 @@ title: OralGuard
 emoji: 🦷
 colorFrom: blue
 colorTo: indigo
-sdk: docker
+sdk: streamlit
+sdk_version: 1.35.0
+app_file: app.py
 pinned: true
 license: mit
 ---
