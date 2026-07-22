@@ -17,6 +17,12 @@
 
 ---
 
+## 🌐 Live Web Application (Git Link)
+Access the interactive web dashboard hosted via GitHub Pages:  
+👉 **[https://drenosh.github.io/Oral_guard/](https://drenosh.github.io/Oral_guard/)**
+
+---
+
 ## Architecture
 
 ```mermaid

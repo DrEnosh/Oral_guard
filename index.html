@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OralGuard AI — Dental Pathology Detection System</title>
+    <meta name="description" content="Uncertainty-Aware Dental Pathology Detection on Panoramic OPG X-Rays using FDI Notation and Deep Learning.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- Header Navigation -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand">
+                <div class="brand-icon">🦷</div>
+                <div class="brand-text">
+                    <h1>OralGuard <span class="badge-ai">AI v3.0</span></h1>
+                    <p>Panoramic OPG Dental Pathology Detection & FDI Mapping</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="sampleBtn"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Demo OPG</button>
+                <button class="btn btn-outline" id="settingsBtn"><i class="fa-solid fa-sliders"></i> Engine API</button>
+                <div class="system-status online" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span class="status-label">Git App Ready</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="app-main">
+        <div class="dashboard-grid">
+
+            <!-- Left Panel: OPG Viewer & Controls -->
+            <section class="panel panel-left">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-x-ray"></i> OPG Image Analysis</h2>
+                    <div class="canvas-controls" id="canvasControls" style="display: none;">
+                        <button class="icon-btn active" id="toggleBoxesBtn" title="Toggle Detection Boxes"><i class="fa-solid fa-vector-square"></i></button>
+                        <button class="icon-btn" id="toggleHeatmapBtn" title="Toggle Grad-CAM Heatmap"><i class="fa-solid fa-fire"></i></button>
+                        <button class="icon-btn" id="resetZoomBtn" title="Reset View"><i class="fa-solid fa-rotate-left"></i></button>
+                    </div>
+                </div>
+
+                <!-- Dropzone / Canvas Container -->
+                <div class="opg-viewport">
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-icon">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <h3>Upload OPG Panoramic X-Ray</h3>
+                        <p>Drag and drop a DICOM, JPG, or PNG radiograph here, or click to browse</p>
+                        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+                        <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                            <i class="fa-solid fa-folder-open"></i> Select File
+                        </button>
+                        <div class="file-hint">
+                            <i class="fa-solid fa-shield-halved"></i> Privacy Protected — Processed in memory
+                        </div>
+                    </div>
+
+                    <!-- Canvas Wrapper -->
+                    <div class="canvas-wrapper" id="canvasWrapper" style="display: none;">
+                        <canvas id="opgCanvas"></canvas>
+                        <div class="canvas-loader" id="canvasLoader" style="display: none;">
+                            <div class="spinner"></div>
+                            <span id="loaderText">Running YOLOv8 & ResNet50 Pipeline...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detection Threshold Controls -->
+                <div class="control-card">
+                    <div class="control-row">
+                        <label for="confSlider">
+                            <span><i class="fa-solid fa-gauge-high"></i> Confidence Threshold</span>
+                            <strong id="confVal">25%</strong>
+                        </label>
+                        <input type="range" id="confSlider" min="10" max="90" value="25" class="range-slider">
+                    </div>
+                    <div class="control-row">
+                        <label for="mcPasses">
+                            <span><i class="fa-solid fa-brain"></i> Monte Carlo Uncertainty Passes</span>
+                            <strong id="mcVal">30 T</strong>
+                        </label>
+                        <input type="range" id="mcPasses" min="5" max="50" value="30" class="range-slider">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Panel: FDI Notation & Diagnostic Summary -->
+            <section class="panel panel-right">
+                
+                <!-- FDI Tooth Grid -->
+                <div class="panel-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-teeth-open"></i> FDI Dental Chart Notation</h3>
+                        <span class="sub-text">ISO 3950 Standard</span>
+                    </div>
+                    <div class="fdi-chart">
+                        <div class="quadrant-label max-right">Maxillary Right (Q1)</div>
+                        <div class="quadrant-label max-left">Maxillary Left (Q2)</div>
+                        
+                        <!-- Upper Arch (Q1 & Q2) -->
+                        <div class="fdi-arch upper-arch" id="upperArch">
+                            <!-- Populated dynamically by JS (18-11, 21-28) -->
+                        </div>
+
+                        <div class="arch-divider">
+                            <span>OCCLUSAL PLANE</span>
+                        </div>
+
+                        <!-- Lower Arch (Q4 & Q3) -->
+                        <div class="fdi-arch lower-arch" id="lowerArch">
+                            <!-- Populated dynamically by JS (48-41, 31-38) -->
+                        </div>
+
+                        <div class="quadrant-label mand-right">Mandibular Right (Q4)</div>
+                        <div class="quadrant-label mand-left">Mandibular Left (Q3)</div>
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="pathology-legend">
+                        <span class="legend-item healthy"><i class="fa-solid fa-circle"></i> Healthy</span>
+                        <span class="legend-item caries"><i class="fa-solid fa-circle"></i> Caries</span>
+                        <span class="legend-item deep-caries"><i class="fa-solid fa-circle"></i> Deep Caries</span>
+                        <span class="legend-item periapical"><i class="fa-solid fa-circle"></i> Periapical Lesion</span>
+                        <span class="legend-item impacted"><i class="fa-solid fa-circle"></i> Impacted Tooth</span>
+                    </div>
+                </div>
+
+                <!-- Pathologies Findings Breakdown -->
+                <div class="panel-card flex-1">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-clipboard-check"></i> Diagnostic Findings</h3>
+                        <span class="badge-count" id="findingsCount">0 Detected</span>
+                    </div>
+
+                    <div class="findings-list" id="findingsList">
+                        <div class="empty-state">
+                            <i class="fa-solid fa-microscope"></i>
+                            <p>Upload an OPG radiograph to view tooth-by-tooth pathology breakdown and uncertainty analysis.</p>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button class="btn btn-primary full-width" id="pdfBtn" disabled>
+                            <i class="fa-solid fa-file-pdf"></i> Export Clinical Diagnostic PDF
+                        </button>
+                        <button class="btn btn-outline full-width" id="jsonBtn" disabled>
+                            <i class="fa-solid fa-code"></i> Export JSON Findings
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Engine Settings Modal -->
+    <div class="modal-backdrop" id="settingsModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-server"></i> OralGuard Backend Configuration</h3>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>OralGuard operates in client-side interactive mode or can connect directly to your local FastAPI backend server.</p>
+                <div class="form-group">
+                    <label for="apiEndpointInput">FastAPI Endpoint URL</label>
+                    <input type="text" id="apiEndpointInput" class="form-input" value="http://localhost:8000/predict">
+                </div>
+                <div class="form-group">
+                    <label for="inferenceModeSelect">Inference Engine Mode</label>
+                    <select id="inferenceModeSelect" class="form-select">
+                        <option value="hybrid" selected>Hybrid (Client High-Speed Engine + API Fallback)</option>
+                        <option value="api">FastAPI Server (http://localhost:8000)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="saveSettingsBtn">Save Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Printable Report Template (Hidden) -->
+    <div id="printReport" class="print-report" style="display: none;">
+        <div class="report-header">
+            <h2>OralGuard AI — Dental Diagnostic Report</h2>
+            <p>Generated: <span id="reportDate"></span></p>
+        </div>
+        <hr>
+        <div class="report-body" id="reportContent"></div>
+    </div>
+
+    <!-- Custom JS -->
+    <script src="app.js"></script>
+</body>
+</html>
